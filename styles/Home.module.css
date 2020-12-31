@@ -8,6 +8,7 @@
 }
 
 .main {
+  width: 100%;
   padding: 5rem 0;
   flex: 1;
   display: flex;
@@ -61,17 +62,10 @@ a.accent:hover {
 }
 
 .grid {
+  width: 80%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  max-width: 800px;
   margin-top: 3rem;
-}
-
-@media (max-width: 600px) {
-  .grid {
-    width: 100%;
-    flex-direction: column;
-  }
 }
