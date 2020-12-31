@@ -1,65 +1,114 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import React from "react";
+import Head from "next/head";
+import Cookies from "universal-cookie";
+import firebase from "../components/Firebase";
+import StatusCard from "../components/StatusCard";
+import Modal from "../components/Modal";
+import styles from "../styles/home.module.css";
+import loader from "../styles/loader.module.css";
 
-export default function Home() {
-  return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+const db = firebase.firestore();
+export default class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false,
+      name: "",
+      reserver: "",
+      cookies: new Cookies(),
+      ready: false,
+      time: Date.now(),
+    };
+  }
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+  componentDidMount() {
+    this.doSetup();
+    this.interval = setInterval(() => this.doSetup(), 120000);
+  }
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
+  handleModalSubmut = (name) => {
+    this.state.cookies.set("name", name);
+    this.setState({ showModal: false, name: name });
+  };
+
+  handleSetUser = (name) => {
+    db.collection("status")
+      .doc("current")
+      .get()
+      .then((res) => {
+        let holder = res.data()["user"];
+        if (holder === this.state.name || holder === "") {
+          this.setState({ reserver: name });
+          db.collection("status").doc("current").set({ user: name });
+        } else {
+          this.doSetup();
+        }
+      });
+  };
+
+  doSetup() {
+    const name = this.state.cookies.get("name");
+    if (name === undefined) {
+      this.setState({ showModal: true, ready: true });
+    } else {
+      db.collection("status")
+        .doc("current")
+        .get()
+        .then((res) => {
+          this.setState({
+            reserver: res.data()["user"],
+            ready: true,
+            name: name,
+          });
+        });
+    }
+  }
+
+  render() {
+    return (
+      <div className={styles.container}>
+        <Head>
+          <title>Dibs for Mlkmn!</title>
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+
+        {this.state.showModal && <Modal onSubmit={this.handleModalSubmut} />}
+
+        <main className={styles.main}>
+          <h1 className={styles.title}>
+            Call <span className={styles.accent}>dibs</span> on an account
+          </h1>
+
+          <p className={styles.description}>
+            Check the status of or call dibs on one of these accounts
+          </p>
+
+          {this.state.ready ? (
+            <div className={styles.grid}>
+              <StatusCard
+                title={"Webflow"}
+                inUse={this.state.reserver !== ""}
+                userName={this.state.name}
+                inUseBy={this.state.reserver}
+                onClick={this.handleSetUser}
+              />
+            </div>
+          ) : (
+            <div className={loader.loader} />
+          )}
+        </main>
+
+        <footer className={styles.footer}>
+          Made with &#128156; by&nbsp;
+          <a className={styles.accent} href={"https://aarongoidel.com"}>
+            Aaron Goidel
           </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+        </footer>
+      </div>
+    );
+  }
 }
