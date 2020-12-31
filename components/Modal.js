@@ -75,6 +75,12 @@ const Modal = (props) => {
             color: #fff;
             background-color: #0097e6;
           }
+
+          @media (max-width: 700px) {
+            .modal {
+              width: 90%;
+            }
+          }
         `}
       </style>
     </div>
