@@ -4,8 +4,7 @@ import Cookies from "universal-cookie";
 import firebase from "../components/Firebase";
 import StatusCard from "../components/StatusCard";
 import Modal from "../components/Modal";
-import styles from "../styles/home.module.css";
-import loader from "../styles/loader.module.css";
+import Loader from "../components/Loader";
 
 const db = firebase.firestore();
 export default class Home extends React.Component {
@@ -70,7 +69,7 @@ export default class Home extends React.Component {
 
   render() {
     return (
-      <div className={styles.container}>
+      <div className={"container"}>
         <Head>
           <title>Dibs for Mlkmn!</title>
           <link rel="icon" href="/favicon.ico" />
@@ -78,17 +77,17 @@ export default class Home extends React.Component {
 
         {this.state.showModal && <Modal onSubmit={this.handleModalSubmut} />}
 
-        <main className={styles.main}>
-          <h1 className={styles.title}>
-            Call <span className={styles.accent}>dibs</span> on an account
+        <main className={"main"}>
+          <h1 className={"title"}>
+            Call <span className={"accent"}>dibs</span> on an account
           </h1>
 
-          <p className={styles.description}>
+          <p className={"description"}>
             Check the status of or call dibs on one of these accounts
           </p>
 
           {this.state.ready ? (
-            <div className={styles.grid}>
+            <div className={"grid"}>
               <StatusCard
                 title={"Webflow"}
                 inUse={this.state.reserver !== ""}
@@ -98,16 +97,89 @@ export default class Home extends React.Component {
               />
             </div>
           ) : (
-            <div className={loader.loader} />
+            <Loader />
           )}
         </main>
 
-        <footer className={styles.footer}>
+        <footer className={"footer"}>
           Made with &#128156; by&nbsp;
-          <a className={styles.accent} href={"https://aarongoidel.com"}>
+          <a className={"accent"} href={"https://aarongoidel.com"}>
             Aaron Goidel
           </a>
         </footer>
+        <style jsx>{`
+          .container {
+            min-height: 100vh;
+            padding: 0 0.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .main {
+            width: 100%;
+            padding: 5rem 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .footer {
+            width: 100%;
+            height: 100px;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .footer img {
+            margin-left: 0.5rem;
+          }
+
+          .footer a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .accent {
+            color: #0097e6;
+            text-decoration: none;
+          }
+
+          a.accent:hover {
+            text-decoration: underline;
+          }
+
+          .title {
+            margin: 0;
+            line-height: 1.15;
+            font-size: 4rem;
+          }
+
+          .title,
+          .description {
+            text-align: center;
+          }
+
+          .description {
+            line-height: 1.5;
+            font-size: 1.5rem;
+          }
+
+          .grid {
+            width: 80%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+          }
+        `}</style>
       </div>
     );
   }

@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "../styles/card.module.css";
 import CardButton from "./CardButton";
 
 export default class StatusCard extends React.Component {
@@ -26,12 +25,10 @@ export default class StatusCard extends React.Component {
 
   render() {
     return (
-      <div className={styles.card}>
+      <div className={"card"}>
         <h3>
           {this.props.title}{" "}
-          <span
-            className={`${styles.dot} ${this.props.inUse ? styles.taken : ""}`}
-          />
+          <span className={`dot ${this.props.inUse && "taken"}`} />
         </h3>
 
         {!this.props.inUse ? (
@@ -40,7 +37,7 @@ export default class StatusCard extends React.Component {
           <p>
             Is currently being used by&nbsp;
             {
-              <span className={styles.reserver}>
+              <span className={"reserver"}>
                 {this.props.inUseBy == this.props.userName
                   ? "you"
                   : this.props.inUseBy}
@@ -50,6 +47,47 @@ export default class StatusCard extends React.Component {
         )}
 
         {this.makeButton()}
+
+        <style jsx>{`
+          .card {
+            margin: 1rem;
+            width: 400px;
+            padding: 1.5rem;
+            text-align: left;
+            color: inherit;
+            text-decoration: none;
+            border: 1px solid #eaeaea;
+            border-radius: 10px;
+            transition: color 0.15s ease, border-color 0.15s ease;
+          }
+
+          .card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+          }
+
+          .card p {
+            margin: 0;
+            font-size: 1.25rem;
+            line-height: 1.5;
+          }
+
+          .dot {
+            height: 1rem;
+            width: 1rem;
+            background-color: #4cd137;
+            border-radius: 50%;
+            display: inline-block;
+          }
+
+          .taken {
+            background-color: #e84118;
+          }
+
+          .reserver {
+            color: #0097e6;
+          }
+        `}</style>
       </div>
     );
   }
